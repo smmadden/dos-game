@@ -242,6 +242,20 @@ public class DosDeck extends CardStack
     	    }     
     }
 
+	public DosCard deal()
+	{
+		if (stack.size() > 0) {
+			return stack.remove(0);
+		} else {
+			return null;
+		}
+	}
+
+	public void addCard(DosCard c)
+	{
+		stack.add(c);
+	}
+
     public String toString()
     {
         String result = "";
@@ -251,4 +265,4 @@ public class DosDeck extends CardStack
         }
         return result;
     }
-}
+}//add card
