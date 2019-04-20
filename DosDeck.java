@@ -251,6 +251,14 @@ public class DosDeck extends CardStack
 		}
 	}
 
+    public DosCard getCard(int i)
+    {
+        if(stack.size()>i) {
+            return stack.get(i);
+        }
+        return null;
+    }
+
 	public void addCard(DosCard c)
 	{
 		stack.add(c);
