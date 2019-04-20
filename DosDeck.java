@@ -7,6 +7,7 @@ public class DosDeck extends CardStack
     public DosDeck()
     {
         stack = new ArrayList<DosCard>();
+
         // creates the 12 wild dos cards
         for(int i =0; i<12; i++){
         	DosCard c = new DosCard(2, 5);
@@ -263,6 +264,11 @@ public class DosDeck extends CardStack
 	{
 		stack.add(c);
 	}
+
+    public int getSize()
+    {
+        return stack.size();
+    }
 
     public String toString()
     {
