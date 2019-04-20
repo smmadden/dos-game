@@ -54,6 +54,7 @@ public class DosHand extends DosDeck
         return matches;
     }
 
+
     public ArrayList getDoubleNumberMatches(DosCard c){
         ArrayList<ArrayList> matches = new ArrayList<>();
         int i = 0;

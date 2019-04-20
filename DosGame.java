@@ -56,6 +56,3 @@ public class DosGame {
 //                                        2: match
 //                                        etc
 //  then ask for which match the user would like to play
-
-
-// display matches method in this class
