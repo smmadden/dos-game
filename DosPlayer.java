@@ -21,6 +21,10 @@ public class DosPlayer extends Player
         hand.removeCard(c);
     }
 
+    public DosHand myHand(){
+        return hand;
+    }
+
     public String getHand(){
         return hand.toString();
     }
