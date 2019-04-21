@@ -29,6 +29,15 @@ public class DosPlayer extends Player
         return hand.toString();
     }
 
+    public void bonus()
+    {
+        bonusPoints++;
+    }
+
+    public int getBonusPoints(){
+        return bonusPoints;
+    }
+
     public String toString(){
         return super.getName() + " " + "Hand: " + hand.toString(); // add wins / losses / bonus points?
     }
