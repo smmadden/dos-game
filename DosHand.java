@@ -59,8 +59,8 @@ public class DosHand extends DosDeck
         ArrayList<ArrayList> matches = new ArrayList<>();
         int i = 0;
         int z;
-        while(i<this.getSize()){
-            z=i;
+        while(i<this.getSize()-1){
+            z=i+1;
             while(z<this.getSize()){
                 if(this.getCard(i).getFace() + this.getCard(z).getFace() == c.getFace() && c.getFace()!=11){
                     ArrayList<DosCard> match = new ArrayList<>();
@@ -89,6 +89,7 @@ public class DosHand extends DosDeck
         }
         return matches;
     }
+
 
     public String toString(){
         String result = "";
