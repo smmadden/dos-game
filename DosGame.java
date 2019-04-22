@@ -2,10 +2,12 @@ import java.util.*;
 
 public class DosGame {
     public static void main(String[] args) {
+        boolean again = true;
+        boolean game = true;
+
         DosDeck deck = new DosDeck();
         DosHand centerRow = new DosHand();
         DosHand discard = new DosHand();
-        boolean turn, game;
         System.out.println(deck);
         deck.shuffle();
         System.out.println(deck);
@@ -26,45 +28,198 @@ public class DosGame {
         player3.startingHand(deck);
 
         System.out.println();
+        while(again){
+            while(game){
+                turn(player1, centerRow, discard, deck, player2, player3);
+                if(checkWin(player1, deck)){
+                    break;
+                }
+                System.out.println(""+ player1 + player2 + player3);
 
-        System.out.println(player1.getName() + ", you go first. Here is your hand: \n" + player1);
+                turn(player2, centerRow, discard, deck, player3, player1);
+                if(checkWin(player1, deck)){
+                    break;
+                }
+                System.out.println(""+ player1 + player2 + player3);
+
+                turn(player3, centerRow, discard, deck, player1, player2);
+                if(checkWin(player1, deck)){
+                    break;
+                }
+                System.out.println(""+ player1 + player2 + player3);
+            }
+            System.out.println(player1.getName() + "'s record: " + player1.getWins()+" wins and " + player1.getLosses() + " losses.");
+            System.out.println(player1.getName() + "'s record: " + player2.getWins()+" wins and " + player2.getLosses() + " losses.");
+            System.out.println(player1.getName() + "'s record: " + player3.getWins()+" wins and " + player3.getLosses() + " losses.");
+            System.out.print("Would you like to play again? (y/n): ");
+            while(!scan.next().equals("y") || !scan.next().equals("n") || !scan.next().equals("Y") || !scan.next().equals("N")){
+                System.out.print("Invalid input. Please re-enter y or n: ");
+            }
+            if(scan.next().equals("n") || scan.next().equals("N")){
+                again = false;
+            } else {
+               System.out.println("You chose to play again!\n\nNew game:\n");
+                // resets
+                deck = new DosDeck();
+                deck.shuffle();
+                discard = new DosHand();
+                centerRow = new DosHand();
+                centerRow.initiateHand(2, deck);
+                player1.startingHand(deck);
+                player2.startingHand(deck);
+                player3.startingHand(deck);
+            }
+        }
+
+    }
+
+    private static void displayMatches(ArrayList m){
+        if(!m.isEmpty()) {
+            System.out.println("Here are the possible matches: ");
+            for (int i = 0; i < m.size(); i++) {
+                System.out.println((i + 1) + ": " + m.get(i));
+            }
+        } else {
+            System.out.println("No possible matches");
+        }
+        System.out.println();
+    }
+
+    private static boolean checkSingleBonus(DosCard c, DosCard d){ // add wild card ones
+        if(c.getColor() == d.getColor()){
+            return true;
+        } else if(c.getColor() == DosCard.WILD_COL || d.getColor() == DosCard.WILD_COL){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean checkDoubleBonus(DosCard c, DosCard d, DosCard s){
+        if(c.getColor() == d.getColor() && d.getColor() == s.getColor()){
+            return true;
+        } else if(c.getColor() == DosCard.WILD_COL && d.getColor() == s.getColor()){
+            return true;
+        } else if(d.getColor() == DosCard.WILD_COL && s.getColor() == c.getColor()){
+            return true;
+        } else if(s.getColor() == DosCard.WILD_COL && c.getColor() == d.getColor()){
+            return true;
+        } else if(c.getColor() == DosCard.WILD_COL && d.getColor() == DosCard.WILD_COL){
+            return true;
+        } else if(d.getColor() == DosCard.WILD_COL && s.getColor() == DosCard.WILD_COL){
+            return true;
+        } else if(s.getColor() == DosCard.WILD_COL && c.getColor() == DosCard.WILD_COL){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static void turn(DosPlayer p, DosHand centerRow, DosHand discard, DosDeck deck, DosPlayer p1, DosPlayer p2){
+        boolean turn = true;
+        int z = 0;
+        int n = 0;
+        Scanner scan = new Scanner(System.in);
+        Random gen = new Random();
+        System.out.println(p.getName() + ", it's your turn!");
+        System.out.println("Here is your hand: \n" + p.myHand());
         System.out.println("Here is the center row: \n" + centerRow);
         System.out.println();
-        turn = true;
 
         while(turn){
             System.out.println("Single matches: ");
             for (int i = 0; i < centerRow.getSize(); i++) {
                 System.out.println("Center Row card #" + (i + 1) + ": ");
-                displayMatches(player1.myHand().getSingleNumberMatches(centerRow.getCard(i)));
+                displayMatches(p.myHand().getSingleNumberMatches(centerRow.getCard(i)));
             }
 
             System.out.println("Double matches: ");
             for (int i = 0; i < centerRow.getSize(); i++) {
                 System.out.println("Center Row card #" + (i + 1) + ": ");
-                displayMatches(player1.myHand().getDoubleNumberMatches(centerRow.getCard(i)));
+                displayMatches(p.myHand().getDoubleNumberMatches(centerRow.getCard(i)));
             }
 
             boolean isEmpty = true;
             for (int i = 0; i < centerRow.getSize(); i++) {
-                if (!player1.myHand().getSingleNumberMatches(centerRow.getCard(i)).isEmpty()) { // if the list is not empty then there is at least one option to match
+                if (!p.myHand().getSingleNumberMatches(centerRow.getCard(i)).isEmpty()) { // if the list is not empty then there is at least one option to match
                     isEmpty = false;
                     break;
                 }
-                if (!player1.myHand().getDoubleNumberMatches(centerRow.getCard(i)).isEmpty()) { // if the list is not empty then there is at least one option to match
+                if (!p.myHand().getDoubleNumberMatches(centerRow.getCard(i)).isEmpty()) { // if the list is not empty then there is at least one option to match
                     isEmpty = false;
                     break;
                 }
             }
-            if (isEmpty) {
+            if (isEmpty) { // no matches (match lists are all empty)
                 turn = false;
-                System.out.println("You have no possible matches.");
+                System.out.print(p.getName() + ", you have no possible matches.");
+                if(z==0){
+                    System.out.print( " Press 'p' to pull from the deck. ");
+                    while(!scan.next().equals("p")) {
+                        System.out.println();
+                        System.out.print("Incorrect input. Please press 'p' ");
+                        System.out.println();
+                    }
+                    //add to centerRow then remove
+                    int rand = gen.nextInt(p.myHand().getSize());
+                    centerRow.pullCard(p.myHand().getCard(rand));
+                    p.myHand().removeCard(p.myHand().getCard(rand));
+                    p.myHand().pullCard(deck.deal());
+                    System.out.println("Here is the center row now: \n" + centerRow);
+                    System.out.println(p.getName() + ", here is your hand: \n" + p.myHand());
+                    System.out.println();
+
+                    System.out.println("Single matches: ");
+                    for (int i = 0; i < centerRow.getSize(); i++) {
+                        System.out.println("Center Row card #" + (i + 1) + ": ");
+                        displayMatches(p.myHand().getSingleNumberMatches(centerRow.getCard(i)));
+                    }
+
+                    System.out.println("Double matches: ");
+                    for (int i = 0; i < centerRow.getSize(); i++) {
+                        System.out.println("Center Row card #" + (i + 1) + ": ");
+                        displayMatches(p.myHand().getDoubleNumberMatches(centerRow.getCard(i)));
+                    }
+
+                    isEmpty = true;
+                    for (int i = 0; i < centerRow.getSize(); i++) {
+                        if (!p.myHand().getSingleNumberMatches(centerRow.getCard(i)).isEmpty()) { // if the list is not empty then there is at least one option to match
+                            isEmpty = false;
+                            break;
+                        }
+                        if (!p.myHand().getDoubleNumberMatches(centerRow.getCard(i)).isEmpty()) { // if the list is not empty then there is at least one option to match
+                            isEmpty = false;
+                            break;
+                        }
+                    }
+                } else {
+                    while(centerRow.getSize() < 2){
+                        centerRow.pullCard(deck.deal());
+                    }
+                    if(n>0 && n<=p.myHand().getSize()){
+                        for(int i=0; i<n; i++){
+                            int rand = gen.nextInt(p.myHand().getSize());
+                            centerRow.pullCard(p.myHand().getCard(rand));
+                            p.myHand().removeCard(p.myHand().getCard(rand));
+                        }
+                    } else if(n>0){
+                        for(int i=0; i<p.myHand().getSize(); i++){
+                            int rand = gen.nextInt(p.myHand().getSize());
+                            centerRow.pullCard(p.myHand().getCard(rand));
+                            p.myHand().removeCard(p.myHand().getCard(rand));
+                        }
+                    }
 
 
-                // go through procedure if no possible matches
 
 
-            } else {
+
+
+                    System.out.println(" It is now the next person's turn!\n");
+                }
+
+            }
+            if(!isEmpty){
                 System.out.print("Would you like to play a single or double match? (S or D): ");
                 String sd = scan.next();
                 System.out.println();
@@ -85,7 +240,7 @@ public class DosGame {
                     }
                     cc--;
                     //single matches center row card cc
-                    ArrayList<DosCard> singleMatches = player1.myHand().getSingleNumberMatches(centerRow.getCard(cc));
+                    ArrayList<DosCard> singleMatches = p.myHand().getSingleNumberMatches(centerRow.getCard(cc));
                     System.out.print("Which match would you like to play for " + centerRow.getCard(cc) + "? Match #: ");
                     int match = scan.nextInt();
                     System.out.println();
@@ -99,17 +254,37 @@ public class DosGame {
                     //remove from hand, check for bonus, add to discard, check for end of game, display center row again
 
                     if (checkSingleBonus(centerRow.getCard(cc), singleMatches.get(match))) {
-                        player1.bonus();
+                        p.bonus();
+                        n++;
                         System.out.println("The colors match, you got a bonus point!");
                     }
-                    discard.addCard(singleMatches.get(match));
-                    discard.addCard(centerRow.getCard(cc));
-                    player1.myHand().removeCard(singleMatches.get(match));
+                    discard.pullCard(singleMatches.get(match));
+                    discard.pullCard(centerRow.getCard(cc));
+                    p.myHand().removeCard(singleMatches.get(match));
                     centerRow.removeCard(centerRow.getCard(cc));
 
                     if(centerRow.getSize() <= 0){
                         turn = false;
-                        System.out.println("There are no more center cards for you to match. It is now the next person's turn!");
+                        System.out.println("\nThere are no more center cards for you to match. It is now the next person's turn!");
+                        while(centerRow.getSize() < 2){
+                            centerRow.pullCard(deck.deal());
+                        }
+                        if(n>0 && n<=p.myHand().getSize()){
+                            for(int i=0; i<n; i++){
+                                int rand = gen.nextInt(p.myHand().getSize());
+                                centerRow.pullCard(p.myHand().getCard(rand));
+                                p.myHand().removeCard(p.myHand().getCard(rand));
+                            }
+                        } else if(n>0){
+                            for(int i=0; i<p.myHand().getSize(); i++){
+                                int rand = gen.nextInt(p.myHand().getSize());
+                                centerRow.pullCard(p.myHand().getCard(rand));
+                                p.myHand().removeCard(p.myHand().getCard(rand));
+                            }
+                        }
+                    } else if(checkWin(p, deck)){
+                        p.won();
+                        System.out.println(p.getName() + ", you win!");
                     } else {
                         System.out.println("Here is the center row now: \n" + centerRow);
                     }
@@ -127,7 +302,7 @@ public class DosGame {
                     }
                     cc--;
                     //double matches center row card cc
-                    ArrayList<ArrayList> doubleMatches = player1.myHand().getDoubleNumberMatches(centerRow.getCard(cc));
+                    ArrayList<ArrayList> doubleMatches = p.myHand().getDoubleNumberMatches(centerRow.getCard(cc));
                     System.out.print("Which match would you like to play for " + centerRow.getCard(cc) + "? Match #: ");
                     int match = scan.nextInt();
                     System.out.println();
@@ -142,66 +317,65 @@ public class DosGame {
 
 
                     if (checkDoubleBonus(centerRow.getCard(cc), (DosCard)doubleMatches.get(match).get(0), (DosCard)doubleMatches.get(match).get(1))) {
-                        player1.bonus();
-                        System.out.println("The colors match, you got a bonus point!");
+                        p.bonus();
+                        n++;
+                        p1.pullCard(deck.deal());
+                        p2.pullCard(deck.deal());
+                        System.out.println("The colors match, you got a bonus point and the other players must draw!");
                     }
-                    discard.addCard((DosCard)doubleMatches.get(match).get(0));
-                    discard.addCard((DosCard)doubleMatches.get(match).get(1));
-                    discard.addCard(centerRow.getCard(cc));
-                    player1.myHand().removeCard((DosCard)doubleMatches.get(match).get(0));
-                    player1.myHand().removeCard((DosCard)doubleMatches.get(match).get(1));
+                    discard.pullCard((DosCard)doubleMatches.get(match).get(0));
+                    discard.pullCard((DosCard)doubleMatches.get(match).get(1));
+                    discard.pullCard(centerRow.getCard(cc));
+                    p.myHand().removeCard((DosCard)doubleMatches.get(match).get(0));
+                    p.myHand().removeCard((DosCard)doubleMatches.get(match).get(1));
                     centerRow.removeCard(centerRow.getCard(cc));
 
                     if(centerRow.getSize() <= 0){
                         turn = false;
-                        System.out.println("There are no more center cards for you to match. It is now the next person's turn!");
+                        System.out.println("\nThere are no more center cards for you to match. It is now the next person's turn!");
+                        while(centerRow.getSize() < 2){
+                            centerRow.pullCard(deck.deal());
+                        }
+                        if(n>0 && n<=p.myHand().getSize()){
+                            for(int i=0; i<n; i++){
+                                int rand = gen.nextInt(p.myHand().getSize());
+                                centerRow.pullCard(p.myHand().getCard(rand));
+                                p.myHand().removeCard(p.myHand().getCard(rand));
+                            }
+                        } else if(n>0){
+                            for(int i=0; i<p.myHand().getSize(); i++){
+                                int rand = gen.nextInt(p.myHand().getSize());
+                                centerRow.pullCard(p.myHand().getCard(rand));
+                                p.myHand().removeCard(p.myHand().getCard(rand));
+                            }
+                        }
+                    } else if(checkWin(p, deck)){
+                        p.won();
+                        System.out.println(p.getName() + ", you win!");
                     } else {
                         System.out.println("Here is the center row now: \n" + centerRow);
                     }
                     System.out.println();
 
                 }
+
+                z++;
+
+
             }
             // check if center row is empty, then end of turn
 
         }
 
-        // ask for index of choice, then return that index of that object in the hand with indexOf(),
-        // then remove that card from the hand and add both center row card and hand card to discard pile
-        // after user enters choice, check for bonus points if applicable
-        //System.out.println(player1.myHand().getSingleNumberMatches(centerRow.getCard(0)).contains(player1.myHand().getCard(0))); // contains() works
 
     }
 
-    private static void displayMatches(ArrayList m){
-        if(!m.isEmpty()) {
-            System.out.println("Here are the possible matches: ");
-            for (int i = 0; i < m.size(); i++) {
-                System.out.println((i + 1) + ": " + m.get(i));
-            }
+    private static boolean checkWin(DosPlayer p, DosDeck deck){
+        if(deck.getSize() <= 0 || p.myHand().getSize() <= 0 || p.getBonusPoints()>=5){
+            return true;
         } else {
-            System.out.println("No possible matches");
+            return false;
         }
-        System.out.println();
     }
-
-    private static boolean checkSingleBonus(DosCard c, DosCard d){ // add wild card ones
-        return c.getColor() == d.getColor();
-    }
-
-    private static boolean checkDoubleBonus(DosCard c, DosCard d, DosCard s){
-        return c.getColor() == d.getColor() && d.getColor() == s.getColor();
-    }
-
-    // method to check if its the end of the game
 
 }
-
-
-
-//ask for name of first player, then ask if there is another player then ask for that name, so on
-
-// here are your single number matches:   1: match
-//                                        2: match
-//                                        etc
-//  then ask for which match the user would like to play
