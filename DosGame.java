@@ -23,39 +23,50 @@ public class DosGame {
         DosPlayer player3 = new DosPlayer(scan.next());
 
         centerRow.initiateHand(2, deck);
-        player1.startingHand(deck);
-        player2.startingHand(deck);
-        player3.startingHand(deck);
+        for(int i=0; i<7; i++){
+            player1.pullCard(deck.deal());
+            player2.pullCard(deck.deal());
+            player3.pullCard(deck.deal());
+        }
 
         System.out.println();
         while(again){
+            System.out.println(player1.getName() + "'s hand: " + player1.myHand());
+            System.out.println(player2.getName() + "'s hand: " + player2.myHand());
+            System.out.println(player3.getName() + "'s hand: " + player3.myHand());
+            System.out.println();
+
             while(game){
                 turn(player1, centerRow, discard, deck, player2, player3);
                 if(checkWin(player1, deck)){
+
                     break;
                 }
                 System.out.println(""+ player1 + player2 + player3);
 
                 turn(player2, centerRow, discard, deck, player3, player1);
-                if(checkWin(player1, deck)){
+                if(checkWin(player2, deck)){
+
                     break;
                 }
                 System.out.println(""+ player1 + player2 + player3);
 
                 turn(player3, centerRow, discard, deck, player1, player2);
-                if(checkWin(player1, deck)){
+                if(checkWin(player3, deck)){
+
                     break;
                 }
                 System.out.println(""+ player1 + player2 + player3);
             }
             System.out.println(player1.getName() + "'s record: " + player1.getWins()+" wins and " + player1.getLosses() + " losses.");
-            System.out.println(player1.getName() + "'s record: " + player2.getWins()+" wins and " + player2.getLosses() + " losses.");
-            System.out.println(player1.getName() + "'s record: " + player3.getWins()+" wins and " + player3.getLosses() + " losses.");
+            System.out.println(player2.getName() + "'s record: " + player2.getWins()+" wins and " + player2.getLosses() + " losses.");
+            System.out.println(player3.getName() + "'s record: " + player3.getWins()+" wins and " + player3.getLosses() + " losses.");
             System.out.print("Would you like to play again? (y/n): ");
-            while(!scan.next().equals("y") || !scan.next().equals("n") || !scan.next().equals("Y") || !scan.next().equals("N")){
+            String yn = scan.next();
+            while(!yn.equals("y") && !yn.equals("n") && !yn.equals("Y") && !yn.equals("N")){
                 System.out.print("Invalid input. Please re-enter y or n: ");
             }
-            if(scan.next().equals("n") || scan.next().equals("N")){
+            if(yn.equals("n") || yn.equals("N")){
                 again = false;
             } else {
                System.out.println("You chose to play again!\n\nNew game:\n");
@@ -65,9 +76,11 @@ public class DosGame {
                 discard = new DosHand();
                 centerRow = new DosHand();
                 centerRow.initiateHand(2, deck);
-                player1.startingHand(deck);
-                player2.startingHand(deck);
-                player3.startingHand(deck);
+                for(int i=0; i<7; i++){
+                    player1.pullCard(deck.deal());
+                    player2.pullCard(deck.deal());
+                    player3.pullCard(deck.deal());
+                }
             }
         }
 
@@ -229,7 +242,6 @@ public class DosGame {
                     System.out.println();
                 }
                 if (sd.equals("S") || sd.equals("s")) { // single match
-                    // ask for which match
                     System.out.print("You chose to play a single number match. Which center row card would you like to match to? Card #: ");
                     int cc = scan.nextInt();
                     System.out.println();
@@ -251,7 +263,6 @@ public class DosGame {
                     }
                     match--;
                     System.out.println("You chose to match center row card " + centerRow.getCard(cc) + " with your " + singleMatches.get(match) + " card.");
-                    //remove from hand, check for bonus, add to discard, check for end of game, display center row again
 
                     if (checkSingleBonus(centerRow.getCard(cc), singleMatches.get(match))) {
                         p.bonus();
@@ -283,8 +294,10 @@ public class DosGame {
                             }
                         }
                     } else if(checkWin(p, deck)){
-                        p.won();
                         System.out.println(p.getName() + ", you win!");
+                        p.won();
+                        p1.lost();
+                        p2.lost();
                     } else {
                         System.out.println("Here is the center row now: \n" + centerRow);
                     }
@@ -313,8 +326,6 @@ public class DosGame {
                     }
                     match--;
                     System.out.println("You chose to match center row card " + centerRow.getCard(cc) + " with " + doubleMatches.get(match).get(0) + " and " + doubleMatches.get(match).get(1) + ".");
-                    //remove from hand, check for bonus, add to discard, display center row again
-
 
                     if (checkDoubleBonus(centerRow.getCard(cc), (DosCard)doubleMatches.get(match).get(0), (DosCard)doubleMatches.get(match).get(1))) {
                         p.bonus();
@@ -350,24 +361,19 @@ public class DosGame {
                             }
                         }
                     } else if(checkWin(p, deck)){
-                        p.won();
                         System.out.println(p.getName() + ", you win!");
+                        p.won();
+                        p1.lost();
+                        p2.lost();
                     } else {
                         System.out.println("Here is the center row now: \n" + centerRow);
                     }
                     System.out.println();
 
                 }
-
-                z++;
-
-
+                z++; // keeps track of number of matches per person per turn
             }
-            // check if center row is empty, then end of turn
-
         }
-
-
     }
 
     private static boolean checkWin(DosPlayer p, DosDeck deck){

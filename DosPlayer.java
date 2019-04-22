@@ -9,10 +9,6 @@ public class DosPlayer extends Player
         bonusPoints = 0;
     }
 
-    public void startingHand(DosDeck d){
-        hand.initiateHand(7, d);
-    }
-
     public void pullCard(DosCard d){
         hand.pullCard(d);
     }
