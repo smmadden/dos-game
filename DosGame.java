@@ -19,7 +19,7 @@ public class DosGame {
         System.out.print("Enter the second player's name: ");
         DosPlayer player2 = new DosPlayer(scan.next());
 
-        System.out.print("Enter the second player's name: ");
+        System.out.print("Enter the third player's name: ");
         DosPlayer player3 = new DosPlayer(scan.next());
 
         centerRow.initiateHand(2, deck);
